@@ -18,22 +18,23 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "NB/Z&}0E#Ql!4_W&e1e#5);Fge5<+wy-~`7I;~n[s0e65|fKv<NKTE1Lvb>Rd~N";
+    private static final String SECRET_KEY = "TkIvWi19MEUjUWwhNF9XJmUxZSM1KTtGZ2U1PCt3eS1+YDdJO35uW3MwZTY1fGZLdjxOS1RFMUx2" +
+            "Yj5SZH5O";
 
     public String extractUserEmail(String token) {
-    return extractClaim(token, Claims::getSubject);
+        return extractClaim(token, Claims::getSubject);
     }
 
-        public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
-        }
+    }
 
-        public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
-        }
+    }
 
-        public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
@@ -42,16 +43,16 @@ public class JwtService {
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
-        }
+    }
 
-        public boolean isTokenValid(String token, UserDetails userDetails) {
+    public boolean isTokenValid(String token, UserDetails userDetails) {
         final String userEmail = extractUserEmail(token);
         return (userEmail.equals(userDetails.getUsername()) && !isTokenExpired(token));
-        }
+    }
 
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
-        }
+    }
 
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
@@ -64,7 +65,7 @@ public class JwtService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        }
+    }
 
     private Key getSigningKey() {
         byte[] keyByte = Decoders.BASE64.decode(SECRET_KEY);
